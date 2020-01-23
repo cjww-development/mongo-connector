@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.mongo
+package com.cjwwdev.mongo.indexing
 
-import com.cjwwdev.mongo.connection.Collection
-import com.mongodb.client.model.IndexModel
+import com.cjwwdev.mongo.DatabaseRepository
+import org.slf4j.{Logger, LoggerFactory}
 import org.bson.codecs.configuration.CodecRegistry
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
-trait DatabaseRepository[T] extends Collection[T] {
-  def indexes: Seq[IndexModel] = Seq.empty
+trait RepositoryIndexer {
+  private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def ensureSingleIndex(index: IndexModel)(implicit ct: ClassTag[T], codec: CodecRegistry): Future[Seq[String]] = {
-    collection.createIndexes(Seq(index)).toFuture()
+  def ensureMultipleIndexes[T](repo: DatabaseRepository[T])(implicit codec: CodecRegistry, ec: ExecutionContext, ct: ClassTag[T]): Future[Seq[String]] = {
+    Future.sequence(repo.indexes map repo.ensureSingleIndex).map { seq =>
+      val flatSeq = seq.flatten
+      flatSeq foreach logger.info
+      flatSeq
+    }
   }
 }

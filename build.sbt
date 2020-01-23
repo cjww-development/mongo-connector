@@ -29,6 +29,7 @@ val btVersion: String = Try(ConfigFactory.load.getString("version")) match {
 val dependencies: Seq[ModuleID] = Seq(
   "com.typesafe"           %  "config"             % "1.4.0",
   "org.mongodb.scala"      %% "mongo-scala-driver" % "2.8.0",
+  "org.slf4j"              %  "slf4j-api"          % "1.7.30",
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0"  % Test
 )
 

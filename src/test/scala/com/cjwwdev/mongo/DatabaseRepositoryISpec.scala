@@ -15,24 +15,39 @@
  */
 package com.cjwwdev.mongo
 
+import com.cjwwdev.mongo.indexing.RepositoryIndexer
 import com.cjwwdev.mongo.models.TestModel
 import com.cjwwdev.mongo.models.TestModel._
 import com.cjwwdev.mongo.responses.{MongoSuccessCreate, MongoSuccessDelete, MongoSuccessUpdate}
+import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
+import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.PlaySpec
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.reflect.ClassTag
 
-class DatabaseRepositoryISpec extends PlaySpec with FutureAwaits with DefaultAwaitTimeout {
+class DatabaseRepositoryISpec extends PlaySpec with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterAll {
 
   val testRepository: TestRepository[TestModel] = new TestRepository[TestModel] {
+    override def indexes: Seq[IndexModel] = Seq(
+      IndexModel(Indexes.ascending("string"), IndexOptions().background(false).unique(true)),
+      IndexModel(Indexes.ascending("int"), IndexOptions().background(false).unique(true))
+    )
     override implicit val ct: ClassTag[TestModel] = ClassTag(classOf[TestModel])
     override implicit val ec: ExecutionContext = Implicits.global
     override protected val dbName: String = "test-db"
     override protected val mongoUri: String = "mongodb://localhost:27017"
     override protected val collectionName: String = "test-collection"
+  }
+
+  val repoIndexer: RepositoryIndexer = new RepositoryIndexer {}
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
+    await(repoIndexer.ensureMultipleIndexes[TestModel](testRepository))
   }
 
   "create" should {
