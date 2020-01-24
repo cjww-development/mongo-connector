@@ -27,16 +27,15 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.reflect.ClassTag
 
 class DatabaseRepositoryISpec extends PlaySpec with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterAll {
 
-  val testRepository: TestRepository[TestModel] = new TestRepository[TestModel] {
+  val testRepository: TestRepository = new TestRepository {
     override def indexes: Seq[IndexModel] = Seq(
       IndexModel(Indexes.ascending("string"), IndexOptions().background(false).unique(true)),
       IndexModel(Indexes.ascending("int"), IndexOptions().background(false).unique(true))
     )
-    override implicit val ct: ClassTag[TestModel] = ClassTag(classOf[TestModel])
+
     override implicit val ec: ExecutionContext = Implicits.global
     override protected val dbName: String = "test-db"
     override protected val mongoUri: String = "mongodb://localhost:27017"

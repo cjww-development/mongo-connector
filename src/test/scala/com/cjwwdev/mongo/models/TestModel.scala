@@ -21,8 +21,11 @@ import org.bson.codecs.configuration.CodecRegistry
 import org.mongodb.scala.bson.codecs.DEFAULT_CODEC_REGISTRY
 import org.mongodb.scala.bson.codecs.Macros._
 
+import scala.reflect.ClassTag
+
 case class TestModel(_id: String, string: String, int: Int)
 
 object TestModel {
   implicit val mongoCodec: CodecRegistry = fromRegistries(fromProviders(classOf[TestModel]), DEFAULT_CODEC_REGISTRY)
+  implicit val classTag: ClassTag[Nothing] = ClassTag(classOf[TestModel])
 }

@@ -21,15 +21,13 @@ import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
 
 import scala.reflect.ClassTag
 
-trait Collection[T] {
+trait Collection {
   protected val mongoUri, dbName, collectionName: String
-
-  implicit val ct: ClassTag[T]
 
   private lazy val mongoClient: MongoClient = MongoClient(mongoUri)
   private lazy val database: MongoDatabase = mongoClient.getDatabase(dbName)
 
-  def collection(implicit ct: ClassTag[T], codec: CodecRegistry): MongoCollection[T] = {
+  def collection[T](implicit ct: ClassTag[T], codec: CodecRegistry): MongoCollection[T] = {
     database.withCodecRegistry(codec).getCollection[T](collectionName)
   }
 }

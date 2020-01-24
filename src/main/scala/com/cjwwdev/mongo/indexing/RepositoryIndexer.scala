@@ -26,10 +26,15 @@ import scala.reflect.ClassTag
 trait RepositoryIndexer {
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def ensureMultipleIndexes[T](repo: DatabaseRepository[T])(implicit codec: CodecRegistry, ec: ExecutionContext, ct: ClassTag[T]): Future[Seq[String]] = {
+  def ensureMultipleIndexes[T](repo: DatabaseRepository)(implicit codec: CodecRegistry, ec: ExecutionContext, ct: ClassTag[T]): Future[Seq[String]] = {
     Future.sequence(repo.indexes map repo.ensureSingleIndex).map { seq =>
       val flatSeq = seq.flatten
-      flatSeq foreach logger.info
+      flatSeq.foreach(idx => logger.info(s"[ensureMultipleIndexes] - Ensured index ${idx}"))
+      if(flatSeq.size == repo.indexes.size) {
+        logger.info("[ensureMultipleIndexes] - All indexes ensured")
+      } else {
+        logger.warn(s"[ensureMultipleIndexes] - There was a problem ensuring one or more indexes for ${repo.getClass.getCanonicalName}")
+      }
       flatSeq
     }
   }

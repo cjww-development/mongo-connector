@@ -22,29 +22,30 @@ import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Updates._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
-trait TestRepository[T] extends DatabaseRepository[T] {
+trait TestRepository extends DatabaseRepository {
   implicit val ec: ExecutionContext
 
-  def create(data: T)(implicit codec: CodecRegistry): Future[MongoCreateResponse] = {
-    collection.insertOne(data).toFuture().map {
+  def create[T](data: T)(implicit codec: CodecRegistry, ct: ClassTag[T]): Future[MongoCreateResponse] = {
+    collection[T].insertOne(data).toFuture().map {
       _ => MongoSuccessCreate
     }
   }
 
-  def get(id: String)(implicit codec: CodecRegistry): Future[Option[T]] = {
-    collection.find[T](equal("_id", id)).first().toFutureOption()
+  def get[T](id: String)(implicit codec: CodecRegistry, ct: ClassTag[T]): Future[Option[T]] = {
+    collection[T].find[T](equal("_id", id)).first().toFutureOption()
   }
 
-  def update(id: String, data: Map[String, Any])(implicit codec: CodecRegistry): Future[MongoUpdatedResponse] = {
+  def update[T](id: String, data: Map[String, Any])(implicit codec: CodecRegistry, ct: ClassTag[T]): Future[MongoUpdatedResponse] = {
     val bsonUpdate = data.collect({ case (k, v) => set(k, v) }).toSeq
-    collection.updateOne(equal("_id", id), bsonUpdate).toFuture().map {
+    collection[T].updateOne(equal("_id", id), bsonUpdate).toFuture().map {
       _ => MongoSuccessUpdate
     }
   }
 
-  def delete(id: String)(implicit codec: CodecRegistry): Future[MongoDeleteResponse] = {
-    collection.deleteOne(equal("_id", id)).toFuture().map {
+  def delete[T](id: String)(implicit codec: CodecRegistry, ct: ClassTag[T]): Future[MongoDeleteResponse] = {
+    collection[T].deleteOne(equal("_id", id)).toFuture().map {
       _ => MongoSuccessDelete
     }
   }

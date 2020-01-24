@@ -23,10 +23,10 @@ import org.bson.codecs.configuration.CodecRegistry
 import scala.concurrent.Future
 import scala.reflect.ClassTag
 
-trait DatabaseRepository[T] extends Collection[T] {
+trait DatabaseRepository extends Collection {
   def indexes: Seq[IndexModel] = Seq.empty
 
-  def ensureSingleIndex(index: IndexModel)(implicit ct: ClassTag[T], codec: CodecRegistry): Future[Seq[String]] = {
+  def ensureSingleIndex[T](index: IndexModel)(implicit ct: ClassTag[T], codec: CodecRegistry): Future[Seq[String]] = {
     collection.createIndexes(Seq(index)).toFuture()
   }
 }
