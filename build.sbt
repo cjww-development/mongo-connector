@@ -27,9 +27,10 @@ val btVersion: String = Try(ConfigFactory.load.getString("version")) match {
 }
 
 val dependencies: Seq[ModuleID] = Seq(
-  "org.mongodb.scala" %% "mongo-scala-driver"  % "2.8.0",
-  "org.scalactic"     %% "scalactic"           % "3.1.0",
-  "org.scalatest"     %% "scalatest"           % "3.1.0"  % Test
+  "com.typesafe"           %  "config"             % "1.4.0",
+  "org.mongodb.scala"      %% "mongo-scala-driver" % "2.8.0",
+  "org.slf4j"              %  "slf4j-api"          % "1.7.30",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0"  % Test
 )
 
 lazy val scoverageSettings = Seq(
@@ -51,5 +52,6 @@ lazy val library = Project(libraryName, file("."))
     bintrayReleaseOnPublish in ThisBuild :=  true,
     bintrayRepository                    :=  "releases",
     bintrayOmitLicense                   :=  true,
-    scalacOptions           in ThisBuild ++= Seq("-unchecked", "-deprecation")
+    scalacOptions           in ThisBuild ++= Seq("-unchecked", "-deprecation"),
+    testOptions             in Test      +=  Tests.Argument("-oF")
   )
