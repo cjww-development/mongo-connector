@@ -31,7 +31,7 @@ pipeline {
     }
     stage("Publish coverage report"){
       steps{
-        step([$class: 'ScoveragePublisher', reportDir: '/var/lib/jenkins/workspace/cala_mongo-connector_jenkinsfile/target/scala-2.13/scoverage-report', reportFile: 'scoverage.xml'])
+        step([$class: 'ScoveragePublisher', reportDir: './target/scala-2.13/scoverage-report', reportFile: 'scoverage.xml'])
       }
     }
     stage('Version project') {
