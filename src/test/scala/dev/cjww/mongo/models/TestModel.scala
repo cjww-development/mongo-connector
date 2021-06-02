@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.mongo.connection
+package dev.cjww.mongo.models
 
+import org.bson.codecs.configuration.CodecRegistries.{fromProviders, fromRegistries}
 import org.bson.codecs.configuration.CodecRegistry
-import org.mongodb.scala.{MongoClient, MongoCollection, MongoDatabase}
+import org.mongodb.scala.MongoClient.DEFAULT_CODEC_REGISTRY
+import org.mongodb.scala.bson.codecs.Macros._
 
 import scala.reflect.ClassTag
 
-trait Collection {
-  protected val mongoUri, dbName, collectionName: String
+case class TestModel(_id: String, string: String, int: Int)
 
-  private lazy val mongoClient: MongoClient = MongoClient(mongoUri)
-  private lazy val database: MongoDatabase = mongoClient.getDatabase(dbName)
-
-  def collection[T](implicit ct: ClassTag[T], codec: CodecRegistry): MongoCollection[T] = {
-    database.withCodecRegistry(codec).getCollection[T](collectionName)
-  }
+object TestModel {
+  implicit val mongoCodec: CodecRegistry = fromRegistries(fromProviders(classOf[TestModel]), DEFAULT_CODEC_REGISTRY)
+  implicit val classTag: ClassTag[Nothing] = ClassTag(classOf[TestModel])
 }

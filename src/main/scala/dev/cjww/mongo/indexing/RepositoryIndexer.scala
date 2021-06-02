@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.mongo.indexing
+package dev.cjww.mongo.indexing
 
-import com.cjwwdev.mongo.DatabaseRepository
+import dev.cjww.mongo.DatabaseRepository
 import org.slf4j.{Logger, LoggerFactory}
 import org.bson.codecs.configuration.CodecRegistry
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.reflect.ClassTag
 
 trait RepositoryIndexer {
   private val logger: Logger = LoggerFactory.getLogger(getClass)
 
-  def ensureMultipleIndexes[T](repo: DatabaseRepository)(implicit codec: CodecRegistry, ec: ExecutionContext, ct: ClassTag[T]): Future[Seq[String]] = {
+  def ensureMultipleIndexes(repo: DatabaseRepository)(implicit codec: CodecRegistry, ec: ExecutionContext): Future[Seq[String]] = {
     Future.sequence(repo.indexes map repo.ensureSingleIndex).map { seq =>
       val flatSeq = seq.flatten
       flatSeq.foreach(idx => logger.info(s"[ensureMultipleIndexes] - Ensured index ${idx}"))

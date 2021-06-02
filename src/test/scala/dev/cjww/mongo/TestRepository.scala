@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.mongo
+package dev.cjww.mongo
 
-import com.cjwwdev.mongo.responses._
+import dev.cjww.mongo.responses._
 import org.bson.codecs.configuration.CodecRegistry
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Updates._

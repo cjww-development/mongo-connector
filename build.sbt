@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,17 @@
 import com.typesafe.config.ConfigFactory
 import scoverage.ScoverageKeys
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 val libraryName = "mongo-connector"
 
-val btVersion: String = Try(ConfigFactory.load.getString("version")) match {
-  case Success(ver) => ver
-  case Failure(_)   => "0.1.0"
-}
+val btVersion: String = Try(ConfigFactory.load.getString("version")).getOrElse("0.1.0-local")
 
 val dependencies: Seq[ModuleID] = Seq(
-  "com.typesafe"           %  "config"             % "1.4.0",
-  "org.mongodb.scala"      %% "mongo-scala-driver" % "2.8.0",
+  "com.typesafe"           %  "config"             % "1.4.1",
+  "org.mongodb.scala"      %% "mongo-scala-driver" % "4.2.3",
   "org.slf4j"              %  "slf4j-api"          % "1.7.30",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0"  % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0"   % Test
 )
 
 lazy val scoverageSettings = Seq(
@@ -44,14 +41,22 @@ lazy val library = Project(libraryName, file("."))
   .settings(scoverageSettings:_*)
   .settings(
     version                              :=  btVersion,
-    scalaVersion                         :=  "2.13.1",
-    organization                         :=  "com.cjww-dev.libs",
-    resolvers                            ++= Seq("cjww-dev" at "https://dl.bintray.com/cjww-development/releases"),
+    scalaVersion                         :=  "2.13.6",
+    semanticdbEnabled                    :=  true,
+    semanticdbVersion                    :=  scalafixSemanticdb.revision,
+    organization                         :=  "dev.cjww.libs",
     libraryDependencies                  ++= dependencies,
-    bintrayOrganization                  :=  Some("cjww-development"),
-    bintrayReleaseOnPublish in ThisBuild :=  true,
-    bintrayRepository                    :=  "releases",
-    bintrayOmitLicense                   :=  true,
-    scalacOptions           in ThisBuild ++= Seq("-unchecked", "-deprecation"),
-    testOptions             in Test      +=  Tests.Argument("-oF")
+    githubTokenSource                    := (if (Try(ConfigFactory.load.getBoolean("local")).getOrElse(true)) {
+      TokenSource.GitConfig("github.token")
+    } else {
+      TokenSource.Environment("GITHUB_TOKEN")
+    }),
+    githubOwner                          :=  "cjww-development",
+    githubRepository                     :=  libraryName,
+    scalacOptions                        ++= Seq(
+      "-unchecked",
+      "-deprecation",
+      "-Wunused"
+    ),
+    Test / testOptions                   +=  Tests.Argument("-oF")
   )

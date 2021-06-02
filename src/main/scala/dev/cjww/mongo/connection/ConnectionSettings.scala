@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.cjwwdev.mongo.responses
+package dev.cjww.mongo.connection
 
-sealed trait MongoCreateResponse
-sealed trait MongoUpdatedResponse
-sealed trait MongoDeleteResponse
+import com.typesafe.config.Config
 
-case object MongoSuccessCreate extends MongoCreateResponse
-case object MongoFailedCreate  extends MongoCreateResponse
+trait ConnectionSettings {
+  val config: Config
 
-case object MongoSuccessUpdate extends MongoUpdatedResponse
-case object MongoFailedUpdate  extends MongoUpdatedResponse
-
-case object MongoSuccessDelete extends MongoDeleteResponse
-case object MongoFailedDelete  extends MongoDeleteResponse
+  lazy val mongoUri: String = config.getString(s"${getClass.getCanonicalName}.uri")
+  lazy val dbName: String = config.getString(s"${getClass.getCanonicalName}.database")
+  lazy val collectionName: String = config.getString(s"${getClass.getCanonicalName}.collection")
+}

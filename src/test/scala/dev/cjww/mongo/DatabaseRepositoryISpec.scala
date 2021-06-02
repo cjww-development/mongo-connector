@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cjwwdev.mongo
+package dev.cjww.mongo
 
-import com.cjwwdev.mongo.indexing.RepositoryIndexer
-import com.cjwwdev.mongo.models.TestModel
-import com.cjwwdev.mongo.models.TestModel._
-import com.cjwwdev.mongo.responses.{MongoSuccessCreate, MongoSuccessDelete, MongoSuccessUpdate}
+import com.typesafe.config.ConfigFactory
+import dev.cjww.mongo.indexing.RepositoryIndexer
+import dev.cjww.mongo.models.TestModel
+import dev.cjww.mongo.models.TestModel._
+import dev.cjww.mongo.responses.{MongoSuccessCreate, MongoSuccessDelete, MongoSuccessUpdate}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.PlaySpec
@@ -27,8 +28,11 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Try
 
 class DatabaseRepositoryISpec extends PlaySpec with FutureAwaits with DefaultAwaitTimeout with BeforeAndAfterAll {
+
+  val mongoUrl: String = Try(ConfigFactory.load.getString("mongo_url")).getOrElse("mongodb://localhost:27017")
 
   val testRepository: TestRepository = new TestRepository {
     override def indexes: Seq[IndexModel] = Seq(
@@ -37,8 +41,8 @@ class DatabaseRepositoryISpec extends PlaySpec with FutureAwaits with DefaultAwa
     )
 
     override implicit val ec: ExecutionContext = Implicits.global
-    override protected val dbName: String = "test-db"
-    override protected val mongoUri: String = "mongodb://localhost:27017"
+    override protected val dbName: String = "mongo-connector"
+    override protected val mongoUri: String = mongoUrl
     override protected val collectionName: String = "test-collection"
   }
 
@@ -46,7 +50,7 @@ class DatabaseRepositoryISpec extends PlaySpec with FutureAwaits with DefaultAwa
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    await(repoIndexer.ensureMultipleIndexes[TestModel](testRepository))
+    await(repoIndexer.ensureMultipleIndexes(testRepository))
   }
 
   "create" should {

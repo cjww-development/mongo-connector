@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 CJWW Development
+ * Copyright 2021 CJWW Development
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-addSbtPlugin("org.scoverage"     % "sbt-scoverage"         % "1.6.0")
-addSbtPlugin("org.scalastyle"   %% "scalastyle-sbt-plugin" % "1.0.0")
-addSbtPlugin("com.typesafe.sbt"  % "sbt-native-packager"   % "1.3.4")
-addSbtPlugin("org.foundweekends" % "sbt-bintray"           % "0.5.4")
+addSbtPlugin("org.scoverage"     %  "sbt-scoverage"         % "1.8.2")
+addSbtPlugin("org.scalastyle"    %% "scalastyle-sbt-plugin" % "1.0.0")
+addSbtPlugin("com.timushev.sbt"  %  "sbt-updates"           % "0.5.3")
+addSbtPlugin("com.codecommit"    %  "sbt-github-packages"   % "0.5.3")
+addSbtPlugin("ch.epfl.scala"     %  "sbt-scalafix"          % "0.9.29")
