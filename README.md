@@ -13,6 +13,7 @@ To utilise this library add this to your sbt build file
 | Major Version | Scala Version | Mongo Version |
 |---------------|---------------|----------------
 | 0.x.x         | 2.13.x        | 4.2+          |
+| 1.x.x		| 2.13.x        | 4.2+          |
 
 
 ## About
@@ -30,7 +31,7 @@ Configuration for uri, database and collection is derived from the database repo
     }
 ```
 
-#### com.cjwwdev.mongo.DatabaseRepository
+#### dev.cjww.mongo.DatabaseRepository
 Flatmapping **collection** from this trait class will grant access to mongo CRUD operations.
 
 ```scala
@@ -41,7 +42,7 @@ Flatmapping **collection** from this trait class will grant access to mongo CRUD
     }
 ``` 
 
-#### com.cjwwdev.mongo.indexes.RepositoryIndexer
+#### dev.cjww.mongo.indexes.RepositoryIndexer
 To ensure each of your repositories indexes are ensured you need to implement RepositoryIndexer. Provide each of your repositories
 in a sequence. like so
 
